@@ -1,21 +1,34 @@
+"""
+Implements various feature subset selection techniques.
+"""
+
 import math
 import random
-from collections import deque
 from itertools import chain, combinations
 
 random.seed(0)
 
 
 def exhaustive(M, J):
-    # taken from https://docs.python.org/3/library/itertools.html
+    """
+    Finds the set of indices that maximises cost from the powerset.
+    :param M: number of features
+    :param J: cost function
+    :return: indices
+    """
+
     def power_set(iterable):
+        """
+        Finds power set. Taken from https://docs.python.org/3/library/itertools.html
+        :param iterable: set
+        :return: powerset
+        """
+
         s = list(iterable)
-        return chain.from_iterable(combinations(s, r) for r in range(len(s) + 1))
+        return chain.from_iterable(combinations(s, r) for r in range(1, len(s) + 1))
 
     best_cost, best_indices = -math.inf, []
     for indices in power_set(range(M)):
-        if not indices:
-            continue
         cost = J(indices)
         if best_cost < cost:
             best_cost = cost
@@ -24,18 +37,27 @@ def exhaustive(M, J):
 
 
 def sequential_forward(M, J, target_cost):
-    indices = deque(range(M))
-    random.shuffle(indices)
+    """
+    Start from an empty set and greedily add features.
+    :param M: number of features
+    :param J: cost function
+    :param target_cost: stop the search when reached
+    :return: indices
+    """
 
-    best_cost, best_indices = -math.inf, []
+    indices, best_indices = list(range(M)), []
     while indices:
-        index = indices.popleft()
-        best_indices.append(index)
-        cost = J(best_indices)
-        if best_cost < cost:
-            best_cost = cost
-        else:
-            indices.append(index)
+        random.shuffle(indices)
+        best_cost, best_index = -math.inf, None
+        for index in indices:
+            best_indices.append(index)
+            cost = J(best_indices)
             best_indices.pop()
+            if best_cost < cost:
+                best_cost = cost
+                best_index = index
+        indices.pop(best_index)
+        best_indices.append(best_index)
         if best_cost >= target_cost:
             return best_indices
+    return best_indices
