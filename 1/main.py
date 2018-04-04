@@ -81,6 +81,33 @@ def friedman_features():
     print("Friedman1 dataset + exhaustive feature subset selection:\n", *exhaustive_result)
 
 
+def test_features():
+    s = numpy.loadtxt("/home/theawless/Desktop/Assignment 1/pir_old.CSV", delimiter=",")
+    x, y = s[:, 1:8], s[:, 0:1]
+    X_train, X_test = x[:-27], x[-27:]
+    y_train, y_test = y[:-27], y[-27:]
+
+    def linear_regression(feature_indices):
+        """
+        Fit linear regression with train data and test its predictions.
+        :param feature_indices: to select on the dataset
+        :return: cost
+        """
+        model = linear_model.LinearRegression()
+        model.fit(select_features(X_train, feature_indices), y_train)
+        Y_predicted = model.predict(select_features(X_test, feature_indices))
+        # variance, 1 is the perfect score
+        return r2_score(y_test, Y_predicted)
+
+    hill_climbing_result = hill_climbing(X_train.shape[1], linear_regression)
+    sequential_forward_result = sequential_forward(X_train.shape[1], linear_regression, 0.65)
+    exhaustive_result = exhaustive(X_train.shape[1], linear_regression)
+    print("Friedman1 dataset + hill climbing feature subset selection:\n", *hill_climbing_result)
+    print("Friedman1 dataset + sequential forward feature subset selection:\n", *sequential_forward_result)
+    print("Friedman1 dataset + exhaustive feature subset selection:\n", *exhaustive_result)
+
+
 if __name__ == "__main__":
-    diabetes_features()
-    friedman_features()
+    # diabetes_features()
+    # friedman_features()
+    test_features()
