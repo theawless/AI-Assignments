@@ -22,30 +22,11 @@ def metropolis_hastings(x_0, q, p, i):
     return x
 
 
-def p(x):
-    """
-    Given function.
-    :rtype: probability
-    """
-    return numpy.exp(-numpy.power(x, 4.0)) * (2.0 + numpy.sin(5.0 * x) + numpy.sin(-2.0 * numpy.power(x, 2.0)))
-
-
-def n(mu, sigma):
-    """
-    Normal distribution proposal.
-    :param mu: mean
-    :param sigma: standard deviation
-    :return: value
-    """
-    return numpy.random.normal(mu, sigma)
-
-
-def main():
+def main(p, n, sigmas):
     """
     Call functions and draws plots.
     """
     xs = []
-    sigmas = (0.05, 1.0, 50.0)
     for sigma in sigmas:
         xs.append(metropolis_hastings(-1.0, lambda mu: (n(mu, sigma)), p, 1500))
 
@@ -67,4 +48,23 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    def p(x):
+        """
+        Given function.
+        :rtype: probability
+        """
+        return numpy.exp(-numpy.power(x, 4.0)) * (2.0 + numpy.sin(5.0 * x) + numpy.sin(-2.0 * numpy.power(x, 2.0)))
+
+
+    def n(mu, sigma):
+        """
+        Normal distribution proposal.
+        :param mu: mean
+        :param sigma: standard deviation
+        :return: value
+        """
+        return numpy.random.normal(mu, sigma)
+
+
+    sigmas = (0.05, 1.0, 50.0)
+    main(p, n, sigmas)
