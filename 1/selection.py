@@ -6,8 +6,6 @@ import math
 import random
 from itertools import chain, combinations
 
-random.seed(0)
-
 
 def hill_climbing(M, J, get_neighbours=None):
     """
