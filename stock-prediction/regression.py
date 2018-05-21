@@ -1,6 +1,7 @@
 """
 Handles regression techniques.
 """
+import pathlib
 
 import matplotlib.pyplot
 import numpy
@@ -75,10 +76,11 @@ def plot_regression_for_single(data, n_future, n_test):
             matplotlib.pyplot.plot(y_pred, label=regressor_name(regressor))
         matplotlib.pyplot.plot(y_test, label="actual")
         matplotlib.pyplot.title("Predictions of regressors for day in future " + str(day))
-        matplotlib.pyplot.xlabel('days')
-        matplotlib.pyplot.ylabel('prices')
+        matplotlib.pyplot.xlabel("days")
+        matplotlib.pyplot.ylabel("prices")
         matplotlib.pyplot.legend(loc="best")
-    matplotlib.pyplot.show()
+        matplotlib.pyplot.savefig("plots/regression_for_single_" + str(day))
+        matplotlib.pyplot.close()
 
 
 def plot_regression_for_multiple(data, n_test):
@@ -105,17 +107,19 @@ def plot_regression_for_multiple(data, n_test):
 
         print(regressor_name(regressor), "r2_score", r2_score)
         matplotlib.pyplot.plot(y_pred_combined, label=regressor_name(regressor))
-        matplotlib.pyplot.savefig()
     matplotlib.pyplot.plot(y_test, label="actual")
     matplotlib.pyplot.title("Predictions of regressors for days in future")
-    matplotlib.pyplot.xlabel('days')
-    matplotlib.pyplot.ylabel('prices')
+    matplotlib.pyplot.xlabel("days")
+    matplotlib.pyplot.ylabel("prices")
     matplotlib.pyplot.legend(loc="best")
-    matplotlib.pyplot.show()
+    matplotlib.pyplot.savefig("plots/regression_for_multiple")
+    matplotlib.pyplot.close()
 
 
 if __name__ == "__main__":
     numpy.random.seed(0)
+    pathlib.Path("data").mkdir(parents=True, exist_ok=True)
+    pathlib.Path("plots").mkdir(parents=True, exist_ok=True)
 
     data = feature.get_quandl_data("WIKI", "GOOGL")
     plot_regression_for_single(data, 5, 100)

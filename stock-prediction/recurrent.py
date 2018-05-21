@@ -1,6 +1,7 @@
 """
 Handles recurrent neural networks.
 """
+import pathlib
 
 import keras.layers.core
 import keras.layers.recurrent
@@ -34,7 +35,7 @@ def recurrent_lstm(X_train, X_test, y_train, y_test):
     network.add(keras.layers.core.Dense(1))
     network.compile(loss="mse", optimizer="rmsprop")
 
-    network.fit(X_train, y_train, batch_size=512, epochs=10, validation_split=0.05)
+    network.fit(X_train, y_train, batch_size=512, epochs=1, validation_split=0.05)
     y_pred = network.predict(X_test)
     r2_score = sklearn.metrics.r2_score(y_test, y_pred)
     return y_pred, r2_score
@@ -61,10 +62,11 @@ def plot_recurrent_for_single(data, n_future, n_test, n_past):
         matplotlib.pyplot.plot(y_pred, label="recurrent lstm")
         matplotlib.pyplot.plot(y_test, label="actual")
         matplotlib.pyplot.title("Predictions of recurrent for day in future " + str(day))
-        matplotlib.pyplot.xlabel('days')
-        matplotlib.pyplot.ylabel('prices')
+        matplotlib.pyplot.xlabel("days")
+        matplotlib.pyplot.ylabel("prices")
         matplotlib.pyplot.legend(loc="best")
-    matplotlib.pyplot.show()
+        matplotlib.pyplot.savefig("plots/recurrent_for_single_" + str(day))
+        matplotlib.pyplot.close()
 
 
 def plot_recurrent_for_multiple(data, n_test, n_past):
@@ -93,14 +95,17 @@ def plot_recurrent_for_multiple(data, n_test, n_past):
     matplotlib.pyplot.plot(y_pred_combined, label="recurrent lstm")
     matplotlib.pyplot.plot(y_test, label="actual")
     matplotlib.pyplot.title("Predictions of recurrent for days in future")
-    matplotlib.pyplot.xlabel('days')
-    matplotlib.pyplot.ylabel('prices')
+    matplotlib.pyplot.xlabel("days")
+    matplotlib.pyplot.ylabel("prices")
     matplotlib.pyplot.legend(loc="best")
-    matplotlib.pyplot.show()
+    matplotlib.pyplot.savefig("plots/recurrent_for_multiple")
+    matplotlib.pyplot.close()
 
 
 if __name__ == "__main__":
     numpy.random.seed(0)
+    pathlib.Path("data").mkdir(parents=True, exist_ok=True)
+    pathlib.Path("plots").mkdir(parents=True, exist_ok=True)
 
     data = feature.get_quandl_data("WIKI", "GOOGL")
     plot_recurrent_for_single(data, 5, 100, 50)

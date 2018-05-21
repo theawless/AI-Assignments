@@ -1,7 +1,6 @@
 """
 Handles the data and features.
 """
-
 import pathlib
 
 import matplotlib.pyplot
@@ -92,9 +91,7 @@ def get_quandl_data(market, company):
     :param company: company id
     :return: data
     """
-    folder = 'data/' + market
-    pathlib.Path(folder).mkdir(parents=True, exist_ok=True)
-    filename = folder + '/' + company + ".csv"
+    filename = "data/" + company + ".csv"
 
     try:
         # load if already exists
@@ -138,14 +135,17 @@ def plot_feature_selection(data, n_future, n_test):
     matplotlib.pyplot.plot(y_pred_fs, label="selected")
     matplotlib.pyplot.plot(y_test, label="actual")
     matplotlib.pyplot.title("Effect of feature selection")
-    matplotlib.pyplot.xlabel('days')
-    matplotlib.pyplot.ylabel('prices')
+    matplotlib.pyplot.xlabel("days")
+    matplotlib.pyplot.ylabel("prices")
     matplotlib.pyplot.legend(loc="best")
-    matplotlib.pyplot.show()
+    matplotlib.pyplot.savefig("plots/feature_selection")
+    matplotlib.pyplot.close()
 
 
 if __name__ == "__main__":
     numpy.random.seed(0)
+    pathlib.Path("data").mkdir(parents=True, exist_ok=True)
+    pathlib.Path("plots").mkdir(parents=True, exist_ok=True)
 
     data = get_quandl_data("WIKI", "GOOGL")
     plot_feature_selection(data, 3, 100)
