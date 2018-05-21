@@ -28,7 +28,7 @@ def recurrent_lstm(X_train, X_test, y_train, y_test):
     :param X_test: test features
     :param y_train: train output
     :param y_test: test output
-    :return: predicted output and score
+    :return: predicted output
     """
     network = keras.Sequential()
     network.add(keras.layers.LSTM(128, dropout=0.2, recurrent_dropout=0.2, input_shape=(X_train.shape[1:])))
@@ -37,8 +37,7 @@ def recurrent_lstm(X_train, X_test, y_train, y_test):
 
     network.fit(X_train, y_train, batch_size=512, epochs=1, validation_split=0.05)
     y_pred = network.predict(X_test)
-    r2_score = sklearn.metrics.r2_score(y_test, y_pred)
-    return y_pred, r2_score
+    return y_pred
 
 
 def plot_recurrent_for_single(data, n_future, n_test, n_past):
@@ -55,7 +54,8 @@ def plot_recurrent_for_single(data, n_future, n_test, n_past):
         X_train, y_train = build_sequence(X_train, y_train, n_past)
         X_test, y_test = build_sequence(X_test, y_test, n_past)
 
-        y_pred, r2_score = recurrent_lstm(X_train, X_test, y_train, y_test)
+        y_pred = recurrent_lstm(X_train, X_test, y_train, y_test)
+        r2_score = sklearn.metrics.r2_score(y_test, y_pred)
 
         print("recurrent lstm", "future day", day, "r2 score ", r2_score)
         matplotlib.pyplot.figure(day)
@@ -87,7 +87,7 @@ def plot_recurrent_for_multiple(data, n_test, n_past):
         X_train, y_train = build_sequence(X_train, y_train, n_past)
         X_test, y_test = build_sequence(X_test, y_test, n_past)
 
-        y_pred, r2_score = recurrent_lstm(X_train, X_test, y_train, y_test)
+        y_pred = recurrent_lstm(X_train, X_test, y_train, y_test)
         y_pred_combined.append(y_pred[day - 1])
     r2_score = sklearn.metrics.r2_score(y_test, y_pred_combined)
 

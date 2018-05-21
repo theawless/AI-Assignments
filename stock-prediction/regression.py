@@ -46,12 +46,11 @@ def regression(regressor, X_train, X_test, y_train, y_test):
     :param X_test: test features
     :param y_train: train output
     :param y_test: test output
-    :return: predicted output and score
+    :return: predicted output
     """
     regressor.fit(X_train, y_train)
     y_pred = regressor.predict(X_test)
-    r2_score = sklearn.metrics.r2_score(y_test, y_pred)
-    return y_pred, r2_score
+    return y_pred
 
 
 def plot_regression_for_single(data, n_future, n_test):
@@ -69,7 +68,8 @@ def plot_regression_for_single(data, n_future, n_test):
         X_train, X_test, y_train, y_test = feature.divide_sets(X, y, n_test)
         X_train, X_test, _ = feature.select_features(X_train, X_test, y_train)
         for regressor in regressors:
-            y_pred, r2_score = regression(regressor, X_train, X_test, y_train, y_test)
+            y_pred = regression(regressor, X_train, X_test, y_train, y_test)
+            r2_score = sklearn.metrics.r2_score(y_test, y_pred)
 
             print(regressor_name(regressor), "future day", day, "r2 score ", r2_score)
             matplotlib.pyplot.figure(day)
@@ -101,7 +101,7 @@ def plot_regression_for_multiple(data, n_test):
             X_train, X_test, y_train, y_test = feature.divide_sets(X, y, n_test)
             X_train, X_test, _ = feature.select_features(X_train, X_test, y_train)
 
-            y_pred, r2_score = regression(regressor, X_train, X_test, y_train, y_test)
+            y_pred = regression(regressor, X_train, X_test, y_train, y_test)
             y_pred_combined.append(y_pred[day - 1])
         r2_score = sklearn.metrics.r2_score(y_test, y_pred_combined)
 
