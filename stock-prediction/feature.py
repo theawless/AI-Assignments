@@ -41,7 +41,7 @@ def divide_sets(X, y, n_test):
     y_train = y[:-n_test]
     y_test = y[-n_test:]
 
-    scaler = sklearn.preprocessing.StandardScaler()
+    scaler = sklearn.preprocessing.RobustScaler()
     scaler.fit(X_train)
     X_train = scaler.transform(X_train)
     X_test = scaler.transform(X_test)
