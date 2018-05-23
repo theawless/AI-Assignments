@@ -15,6 +15,11 @@ import feature
 
 
 def recurrent_name(recurrent):
+    """
+    Gets a human readable name for the recurrent.
+    :param recurrent: recurent instance
+    :return: name
+    """
     return ' '.join(recurrent.__name__.split('_'))
 
 
@@ -27,13 +32,12 @@ def recurrent_stacked_lstm(X_train, X_test, y_train):
     :return: predicted output
     """
     network = keras.Sequential()
-    network.add(keras.layers.LSTM(64, input_shape=X_train.shape[1:], return_sequences=True))
-    network.add(keras.layers.LSTM(64, return_sequences=True, dropout=0.2, recurrent_dropout=0.2))
-    network.add(keras.layers.LSTM(64, dropout=0.2, recurrent_dropout=0.2))
+    network.add(keras.layers.LSTM(50, input_shape=X_train.shape[1:], return_sequences=True, dropout=0.3))
+    network.add(keras.layers.LSTM(100, dropout=0.2))
     network.add(keras.layers.core.Dense(1))
-    network.compile(loss="mse", optimizer="rmsprop")
+    network.compile(loss="mae", optimizer="rmsprop", metrics=["mse"])
 
-    network.fit(X_train, y_train, batch_size=512, epochs=25, validation_split=0.05)
+    network.fit(X_train, y_train, batch_size=768, epochs=10, validation_split=0.1)
     y_pred = network.predict(X_test)
     return y_pred
 
@@ -47,16 +51,20 @@ def recurrent_lstm(X_train, X_test, y_train):
     :return: predicted output
     """
     network = keras.Sequential()
-    network.add(keras.layers.LSTM(64, input_shape=X_train.shape[1:], dropout=0.2, recurrent_dropout=0.2))
+    network.add(keras.layers.LSTM(150, input_shape=X_train.shape[1:], dropout=0.2))
     network.add(keras.layers.core.Dense(1))
-    network.compile(loss="mse", optimizer="rmsprop")
+    network.compile(loss="mae", optimizer="rmsprop", metrics=["mse"])
 
-    network.fit(X_train, y_train, batch_size=512, epochs=25, validation_split=0.05)
+    network.fit(X_train, y_train, batch_size=768, epochs=10, validation_split=0.1)
     y_pred = network.predict(X_test)
     return y_pred
 
 
 def get_recurrent_predictors():
+    """
+    List of recurrents to be used.
+    :return: recurrent functions
+    """
     return [
         recurrent_lstm,
         recurrent_stacked_lstm,
@@ -64,10 +72,19 @@ def get_recurrent_predictors():
 
 
 def build_sequence(X, y, size):
+    """
+    Builds a windowed sequence.
+    :param X: features
+    :param y: output
+    :param size: window size
+    :return: feature sequence, output sequence
+    """
     Xs = []
     for i in range(X.shape[0] - size - 1):
         Xs.append(X[i:(i + size)])
-    return numpy.array(Xs), numpy.array(y[size + 1:])
+    Xs = numpy.array(Xs)
+    y = y[size + 1:]
+    return Xs, y
 
 
 def plot_recurrent_for_multiple(data, n_test, n_past):
